@@ -5,38 +5,53 @@ from skimage import io
 from scipy.sparse import csr_matrix
 from scipy.sparse import linalg
 from scipy import sparse
+from scipy import misc
 import colorsys
 
-def getimages(bw_image_name, marked_image_name):
+def getimagesRGB(bw_image_name, marked_image_name):
     print "Get images", bw_image_name, marked_image_name
-    bw_image = cv2.imread(bw_image_name)
-    bw_imageRGB = cv2.cvtColor(bw_image, cv2.COLOR_BGR2RGB)
+    bw_image = misc.imread(bw_image_name) #loaded as RGB
+    # plt.imshow(bw_image)
+    # plt.show()
+    marked_image = misc.imread(marked_image_name)
+    return bw_image, marked_image
+    # plt.imshow(marked_image)
+    # plt.show()
+    # bw_imageRGB = cv2.cvtColor(bw_image, cv2.COLOR_BGR2RGB)
+    #
+    # plt.subplot(131)
+    # plt.imshow(bw_imageRGB)
+    #
+    # marked_image = cv2.imread(marked_image_name)
+    # marked_imageRGB = cv2.cvtColor(marked_image, cv2.COLOR_BGR2RGB) # convert BGR to RGB
+    #
+    # plt.subplot(132)
+    # plt.imshow(marked_imageRGB)
+    #
+    # bw_image_norm = np.copy(bw_imageRGB).astype('float64') / 255
+    # marked_image_norm= np.copy(marked_imageRGB).astype('float64') / 255
+    #
+    # marked_locations_image = (np.sum(abs(bw_image_norm - marked_image_norm), 2) > 0.01)  # load the image and then get the cells that are different;
+    # # 0 not marked, 1 is marked
+    #
+    # marked_locations_image = marked_locations_image.astype('float64')
+    #
+    # print marked_locations_image.shape
+    # print marked_locations_image
+    # plt.subplot(133)
+    # plt.imshow(marked_locations_image, cmap="gray")
+    #
+    # plt.show()
+    # plt.savefig("0_start_images.png", bbox_inches='tight')
+    # return bw_imageRGB, marked_imageRGB, bw_image_norm, marked_image_norm, marked_locations_image
 
-    plt.subplot(131)
-    plt.imshow(bw_imageRGB)
+def getMarkedPix(bw, marked):
+    bw_norm= bw.astype("float64")/255
+    marked_norm = marked.astype("float64")/255
 
-    marked_image = cv2.imread(marked_image_name)
-    marked_imageRGB = cv2.cvtColor(marked_image, cv2.COLOR_BGR2RGB) # convert BGR to RGB
-
-    plt.subplot(132)
-    plt.imshow(marked_imageRGB)
-
-    bw_image_norm = np.copy(bw_imageRGB).astype('float64') / 255
-    marked_image_norm= np.copy(marked_imageRGB).astype('float64') / 255
-
-    marked_locations_image = (np.sum(abs(bw_image_norm - marked_image_norm), 2) > 0.01)  # load the image and then get the cells that are different;
-    # 0 not marked, 1 is marked
-
-    marked_locations_image = marked_locations_image.astype('float64')
-
-    print marked_locations_image.shape
-    print marked_locations_image
-    plt.subplot(133)
-    plt.imshow(marked_locations_image, cmap="gray")
-
-    plt.show()
-    plt.savefig("0_start_images.png", bbox_inches='tight')
-    return bw_imageRGB, marked_imageRGB, bw_image_norm, marked_image_norm, marked_locations_image
+    colorPix=  (np.sum(abs(bw_norm - marked_norm), 2) > 0.01)
+    # print type(colorPix[0,0])
+    return colorPix
 
 def create_YUV_norm(bw_image, marked_image):
     print "Create YUV image with marks"
@@ -107,7 +122,7 @@ def create_YUV_norm(bw_image, marked_image):
 
 def dude_code():
     global g_name, c_name
-    g_name, c_name, gI, cI, isColored = getimages('example.bmp', 'example_marked.bmp')
+    g_name, c_name, gI, cI, isColored = getimages('gili_res.bmp', 'example_marked.bmp')
     YUV = create_YUV_norm(g_name, c_name)
 
     def yiq_to_rgb(y, i, q):  # the code from colorsys.yiq_to_rgb is modified to work for arrays
@@ -235,15 +250,19 @@ def dude_code():
 if __name__ == '__main__':
     print "i can fucking do this!"
 
-#
-#
-#     #my code
-#     g_name, c_name, gI, cI, colorIm = getimages('example.bmp', 'example_marked.bmp')
-#     YUV_image = create_YUV_norm(g_name, c_name)
-#
-#     plt.show()
-#     # print YUV_image.shape
-#
+    bw_image, marked_image= getimagesRGB('example.bmp', 'example_marked.bmp')
+    marked_pixels = getMarkedPix(bw_image, marked_image)
+
+
+
+
+    #my code
+    # g_name, c_name, gI, cI, colorIm = getimages('gili_res.bmp', 'example_marked.bmp')
+    # YUV_image = create_YUV_norm(g_name, c_name)
+    #
+    # plt.imshow(g_name)
+    # plt.show()
+
 #     max_d = np.floor(np.log(min(YUV_image.shape[0],YUV_image.shape[1] )) / np.log(2) - 2)
 #     # print max_d
 #     window_function = 2 ** (max_d - 1)
@@ -389,6 +408,4 @@ if __name__ == '__main__':
 # plt.show()
 
 
-
-
-dude_code()
+# dude_code()
