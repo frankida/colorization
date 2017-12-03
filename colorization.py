@@ -130,6 +130,7 @@ def get_index_values(row_index, col_index, values, YUV_image, index_matrix,  win
                 for ii in range(max(0, i - 1), min(i + 2, n)):
                     for jj in range(max(0, j - 1), min(j + 2, m)):
                         if (ii != i) | (jj != j):
+                            # print "Not center"
                             row_index[counter] = pixel_in_image_idx
                             col_index[counter] = index_matrix[ii, jj]
 
@@ -147,11 +148,12 @@ def get_index_values(row_index, col_index, values, YUV_image, index_matrix,  win
             row_index[counter] = pixel_in_image_idx
             col_index[counter] = index_matrix[i, j]
             values[counter] = 1
-
+            # print counter
             counter = counter + 1
             pixel_in_image_idx = pixel_in_image_idx + 1
 
-    return values[0:counter], col_index[0:counter], row_index[0:counter]
+    return values, col_index, row_index
+    # return values[0:counter], col_index[0:counter], row_index[0:counter]
 
 
 def get_neighbor_weights(center_pixel,neighbor_idx,  neighbor_values):
@@ -168,9 +170,9 @@ def get_neighbor_weights(center_pixel,neighbor_idx,  neighbor_values):
 if __name__ == '__main__':
     print "I can * do this!"
 
-    # bw_image, marked_image= getimagesRGB('example.bmp', 'example_marked.bmp')
-    bw_image, marked_image = getimagesRGB('yellow_bw.bmp', 'yellow_m.bmp')
-    #bw_image, marked_image = getimagesRGB('cats_bw.bmp', 'cats_res.bmp')
+#    bw_image, marked_image= getimagesRGB('example.bmp', 'example_marked.bmp')
+    #bw_image, marked_image = getimagesRGB('yellow_bw.bmp', 'yellow_m.bmp')
+    bw_image, marked_image = getimagesRGB('cats_bw.bmp', 'cats_res.bmp')
 
     marked_pixels = getMarkedPix(bw_image, marked_image)
     YUV_image = create_YUV_with_marks(bw_image, marked_image)
